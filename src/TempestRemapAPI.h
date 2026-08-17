@@ -4,7 +4,9 @@
 #include "DataArray3D.h"
 #include "GridElements.h"
 #include "OfflineMap.h"
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 #include <string>
 
 extern "C" {
@@ -455,6 +457,7 @@ extern "C" {
 		bool fgll;
 	};
 
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Generate the OfflineMap between input and output meshes.
 	///	</summary>
@@ -474,6 +477,7 @@ extern "C" {
 	int ApplyOfflineMap(
 		std::string strInputMap,
 		const ApplyOfflineMapOptions & optsApply );
+#endif
 
 	///	<summary>
 	///		Generate the connectivity data for a given input file.

@@ -18,9 +18,10 @@
 #include "Exception.h"
 #include "Announce.h"
 #include "STLStringHelper.h"
+#if defined(TEMPEST_NETCDF)
 #include "NetCDFUtilities.h"
-
 #include "netcdfcpp.h"
+#endif
 
 #include <cmath>
 #include <iostream>
@@ -350,13 +351,16 @@ extern "C"
 int GenerateICOMesh(Mesh& mesh, int nResolution, bool fDual, std::string strOutputFile, std::string strOutputFormat)
 {
 
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
   // Check command line parameters (data type arguments)
   STLStringHelper::ToLower(strOutputFormat);
 
+#if defined(TEMPEST_NETCDF)
 	NcFile::FileFormat eOutputFormat =
 		GetNcFileFormatFromString(strOutputFormat);
 	if (eOutputFormat == NcFile::BadFormat) {
@@ -366,6 +370,7 @@ try {
 	}
 
 
+#endif
 	// Generate Mesh
 	AnnounceBanner();
 	AnnounceStartBlock("Generating Mesh");
@@ -385,8 +390,14 @@ try {
 		Announce("Mesh size: Nodes [%i] Elements [%i]",
 			mesh.nodes.size(), mesh.faces.size());
 
+#if defined(TEMPEST_NETCDF)
 		mesh.Write(strOutputFile, eOutputFormat);
-		
+#else
+		_EXCEPTIONT("Cannot write mesh file: TempestRemap was built "
+			"without NetCDF support (--disable-netcdf). The generated mesh "
+			"is available in the \"mesh\" argument.");
+#endif
+
 		AnnounceEndBlock("Done");
 	}
 

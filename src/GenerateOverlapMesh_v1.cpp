@@ -21,16 +21,22 @@
 #include "GridElements.h"
 #include "OverlapMesh.h"
 
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 
 #include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#if defined(TEMPEST_NETCDF)
+
 extern "C"
 int GenerateOverlapMesh_v1(std::string strMeshA, std::string strMeshB, Mesh& meshOverlap, std::string strOverlapMesh, std::string strMethod, bool fNoValidate) {
 
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
@@ -102,7 +108,13 @@ try {
 
 	// Write the overlap mesh
 	AnnounceStartBlock("Writing overlap mesh");
+#if defined(TEMPEST_NETCDF)
 	meshOverlap.Write(strOverlapMesh.c_str());
+#else
+	_EXCEPTIONT("Cannot write overlap mesh file: TempestRemap was built "
+		"without NetCDF support (--disable-netcdf). The overlap mesh is "
+		"available in the \"meshOverlap\" argument.");
+#endif
 	AnnounceEndBlock(NULL);
 
 } catch(Exception & e) {
@@ -114,5 +126,7 @@ try {
 }
 	return (0);
 }
+
+#endif // TEMPEST_NETCDF
 
 ///////////////////////////////////////////////////////////////////////////////

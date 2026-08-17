@@ -29,7 +29,9 @@
 #include <cmath>
 #include <cstring>
 #include <algorithm>
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 
 #include "triangle.h"
 
@@ -314,6 +316,8 @@ void Mesh::RemoveCoincidentNodes(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+#if defined(TEMPEST_NETCDF)
 
 void Mesh::Write(
 	const std::string & strFile,
@@ -1603,6 +1607,8 @@ void Mesh::Read(const std::string & strFile) {
 		RemoveCoincidentNodes();
 	}
 }
+
+#endif // TEMPEST_NETCDF
 
 ///////////////////////////////////////////////////////////////////////////////
 

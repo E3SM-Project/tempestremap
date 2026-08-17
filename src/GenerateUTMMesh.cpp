@@ -24,7 +24,9 @@
 #include <complex>
 #include <cfloat>
 
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -325,7 +327,9 @@ int GenerateUTMMesh(
 	bool fVerbose
 ) {
 
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
@@ -393,6 +397,7 @@ try {
 		std::cout << "..Writing mesh to file [" << strOutputFile.c_str() << "] ";
 		std::cout << std::endl;
 
+#if defined(TEMPEST_NETCDF)
 		mesh.Write(strOutputFile);
 
 		NcFile ncOutput(strOutputFile.c_str(), NcFile::Write);
@@ -404,6 +409,11 @@ try {
 		ncOutput.add_att("rectilinear_dim1_name", "cols");
 
 		ncOutput.close();
+#else
+		_EXCEPTIONT("Cannot write mesh file: TempestRemap was built "
+			"without NetCDF support (--disable-netcdf). The generated mesh "
+			"is available in the \"mesh\" argument.");
+#endif
 	}
 
 	// Announce
