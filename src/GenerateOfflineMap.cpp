@@ -909,10 +909,10 @@ try {
 
 } catch(Exception & e) {
 	Announce(e.ToString().c_str());
-	return (0);
+	return (-1);
 
 } catch(...) {
-	return (0);
+	return (-2);
 }
 }
 
