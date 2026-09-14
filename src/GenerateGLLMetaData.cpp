@@ -22,9 +22,13 @@
 #include "GaussLobattoQuadrature.h"
 #include "FiniteElementTools.h"
 
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
+
+#if defined(TEMPEST_NETCDF)
 
 extern "C" 
 int GenerateGLLMetaData(
@@ -73,6 +77,12 @@ try {
 	// Write to file
 	if (strOutput.size()) {
 
+#if !defined(TEMPEST_NETCDF)
+		_EXCEPTIONT("Cannot write metadata file: TempestRemap was built "
+			"without NetCDF support (--disable-netcdf). The metadata is "
+			"available in the \"dataGLLnodes\" and \"dataGLLJacobian\" "
+			"arguments.");
+#else
 		// Number of Faces
 		int nElements = static_cast<int>(meshInput.faces.size());
 
@@ -89,6 +99,7 @@ try {
 		varGLLnodes->put(&(dataGLLnodes[0][0][0]), nP, nP, nElements);
 
 		varJacobian->put(&(dataGLLJacobian[0][0][0]), nP, nP, nElements);
+#endif // TEMPEST_NETCDF
 	}
 
 } catch(Exception & e) {
@@ -100,5 +111,7 @@ try {
 }
 	return 0;
 }
+
+#endif // TEMPEST_NETCDF
 
 ///////////////////////////////////////////////////////////////////////////////

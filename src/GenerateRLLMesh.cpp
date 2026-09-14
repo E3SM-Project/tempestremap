@@ -19,12 +19,16 @@
 #include "Exception.h"
 #include "Announce.h"
 #include "STLStringHelper.h"
+#if defined(TEMPEST_NETCDF)
 #include "NetCDFUtilities.h"
+#endif
 
 #include <cmath>
 #include <iostream>
 
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -63,13 +67,16 @@ int GenerateRLLMesh(
 	bool fVerbose
 ) {
 
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
     // Check command line parameters (data type arguments)
     STLStringHelper::ToLower(strOutputFormat);
 
+#if defined(TEMPEST_NETCDF)
 	NcFile::FileFormat eOutputFormat =
 		GetNcFileFormatFromString(strOutputFormat);
 	if (eOutputFormat == NcFile::BadFormat) {
@@ -78,6 +85,7 @@ try {
 			strOutputFormat.c_str());
 	}
 
+#endif
 	// Check fGlobalCap argument
 	bool fCapBegin = false;
 	bool fCapEnd = false;
@@ -108,6 +116,10 @@ try {
 
 	// Generate mesh from input datafile
 	if (strInputFile != "") {
+#if !defined(TEMPEST_NETCDF)
+		_EXCEPTIONT("Cannot read an input datafile: TempestRemap was built "
+			"without NetCDF support (--disable-netcdf).");
+#else
 
 		std::cout << "Generating mesh from input datafile ";
 		std::cout << "\"" << strInputFile << "\"" << std::endl;
@@ -247,6 +259,7 @@ try {
 		dLonEnd = dLonEdge[nLongitudes];
 		dLatBegin = dLatEdge[0];
 		dLatEnd = dLatEdge[nLatitudes];
+#endif // TEMPEST_NETCDF
 
 	// Generate mesh from parameters
 	} else {
@@ -510,6 +523,7 @@ try {
 		std::cout << "..Writing mesh to file [" << strOutputFile.c_str() << "] ";
 		std::cout << std::endl;
 
+#if defined(TEMPEST_NETCDF)
 		mesh.Write(strOutputFile, eOutputFormat);
 
 		// Add rectilinear properties
@@ -532,6 +546,11 @@ try {
 			ncOutput.add_att("rectilinear_dim1_name", "lon");
 		}
 		ncOutput.close();
+#else
+		_EXCEPTIONT("Cannot write mesh file: TempestRemap was built "
+			"without NetCDF support (--disable-netcdf). The generated mesh "
+			"is available in the \"mesh\" argument.");
+#endif
 	}
 
 	// Announce

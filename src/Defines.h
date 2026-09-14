@@ -18,6 +18,17 @@
 #define _DEFINES_H_
 
 ///////////////////////////////////////////////////////////////////////////////
+//
+// Pull in the configure-generated feature macros when building through
+// autotools. This is what makes TEMPEST_NETCDF visible both when building
+// TempestRemap and to downstream consumers of the installed headers, so that
+// both see the same API surface.
+//
+#ifdef HAVE_TEMPEST_CONFIG_H
+#include "TempestConfig.h"
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 
 typedef double Real;
 typedef Real   REAL;  // for use with triangles.h
@@ -67,8 +78,12 @@ static const Real ReferenceTolerance = 1.0e-12;
 // node_multimap_3d which is guaranteed to produce no coincident nodes (but
 // is the slowest).
 //
+// configure also defines OVERLAPMESH_USE_UNSORTED_MAP in TempestConfig.h when
+// <unordered_map> is available, so only define it here if that check did not.
 //#define OVERLAPMESH_RETAIN_REPEATED_NODES
+#ifndef OVERLAPMESH_USE_UNSORTED_MAP
 #define OVERLAPMESH_USE_UNSORTED_MAP
+#endif
 //#define OVERLAPMESH_USE_NODE_MULTIMAP
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,4 +130,3 @@ static const int OverlapFaceSearchMaximumFaces = (-1);
 ///////////////////////////////////////////////////////////////////////////////
 
 #endif
-

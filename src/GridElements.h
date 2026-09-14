@@ -38,7 +38,9 @@
 
 #include "Exception.h"
 #include "DataArray1D.h"
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -717,12 +719,14 @@ public:
     Mesh() : type(MeshType_Unknown) {
 	}
 
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Constructor with input mesh parameter.
 	///	</summary>
 	Mesh(const std::string & strFile) {
 		Read(strFile);
 	}
+#endif
 
 public:
 	///	<summary>
@@ -768,6 +772,7 @@ public:
 	  bool fVerbose = true
 	);
 
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Write the mesh to a NetCDF file in Exodus format.
 	///	</summary>
@@ -796,6 +801,7 @@ public:
 	///		Read the mesh from a NetCDF file.
 	///	</summary>
 	void Read(const std::string & strFile);
+#endif
 
 	///	<summary>
 	///		Remove zero edges from all Faces.

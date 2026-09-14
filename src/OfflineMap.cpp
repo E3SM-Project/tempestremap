@@ -16,8 +16,10 @@
 
 #include "OfflineMap.h"
 
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
 #include "NetCDFUtilities.h"
+#endif
 #include "GridElements.h"
 #include "FiniteElementTools.h"
 #include "STLStringHelper.h"
@@ -28,7 +30,9 @@
 #include "DataArray1D.h"
 #include "DataArray2D.h"
 
+#include <climits>
 #include <cmath>
+#include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -201,6 +205,8 @@ void OfflineMap::SetEnforcementBounds(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+#if defined(TEMPEST_NETCDF)
 
 void OfflineMap::InitializeDimensionsFromMeshFile(
 	const std::string & strMeshFile,
@@ -451,6 +457,7 @@ void OfflineMap::InitializeSourceDimensionsFromFile(
 		m_dSourceVertexLat);
 }
 
+#endif // TEMPEST_NETCDF
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -471,6 +478,8 @@ void OfflineMap::InitializeSourceDimensions(
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#if defined(TEMPEST_NETCDF)
+
 void OfflineMap::InitializeTargetDimensionsFromFile(
 	const std::string & strTargetMesh
 ) {
@@ -483,6 +492,8 @@ void OfflineMap::InitializeTargetDimensionsFromFile(
 		m_dTargetVertexLon,
 		m_dTargetVertexLat);
 }
+
+#endif // TEMPEST_NETCDF
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1191,6 +1202,8 @@ void OfflineMap::InitializeTargetCoordinatesFromMeshFE(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+#if defined(TEMPEST_NETCDF)
 
 NcDim * NcFile_GetDimIfExists(
 	NcFile & ncFile,
@@ -3055,6 +3068,8 @@ void OfflineMap::Write(
 			iterAttributes->second.c_str());
 	}
 }
+
+#endif // TEMPEST_NETCDF
 
 ///////////////////////////////////////////////////////////////////////////////
 

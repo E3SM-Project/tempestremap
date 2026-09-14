@@ -21,8 +21,10 @@
 #include "GridElements.h"
 #include "OverlapMesh.h"
 
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
 #include "NetCDFUtilities.h"
+#endif
 
 #include <cmath>
 
@@ -42,13 +44,16 @@ int GenerateOverlapWithMeshes (
 	const bool fVerbose
 ) {
 
+#if defined(TEMPEST_NETCDF)
     NcError error ( NcError::silent_nonfatal );
+#endif
 
     try
     {
 		// Check command line parameters (data type arguments)
 		STLStringHelper::ToLower(strOutputFormat);
 
+#if defined(TEMPEST_NETCDF)
 		NcFile::FileFormat eOutputFormat =
 			GetNcFileFormatFromString(strOutputFormat);
 		if (eOutputFormat == NcFile::BadFormat) {
@@ -57,6 +62,7 @@ int GenerateOverlapWithMeshes (
 				strOutputFormat.c_str());
 		}
 
+#endif
         // Method string
         OverlapMeshMethod method;
         STLStringHelper::ToLower ( strMethod );
@@ -123,7 +129,13 @@ int GenerateOverlapWithMeshes (
         if ( strOverlapMesh.size() )
         {
             AnnounceStartBlock("Writing overlap mesh");
+#if defined(TEMPEST_NETCDF)
             meshOverlap.Write(strOverlapMesh.c_str(), eOutputFormat);
+#else
+            _EXCEPTIONT("Cannot write overlap mesh file: TempestRemap was "
+                "built without NetCDF support (--disable-netcdf). The overlap "
+                "mesh is available in the \"meshOverlap\" argument.");
+#endif
             AnnounceEndBlock(NULL);
         }
 
@@ -144,6 +156,8 @@ int GenerateOverlapWithMeshes (
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#if defined(TEMPEST_NETCDF)
+
 extern "C"
 int GenerateOverlapMesh(
 	std::string strMeshA,
@@ -159,13 +173,16 @@ int GenerateOverlapMesh(
 	const bool fVerbose
 ) {
 
+#if defined(TEMPEST_NETCDF)
     NcError error ( NcError::silent_nonfatal );
+#endif
 
     try
     {
 		// Check command line parameters (data type arguments)
 		STLStringHelper::ToLower(strOutputFormat);
 
+#if defined(TEMPEST_NETCDF)
 		NcFile::FileFormat eOutputFormat =
 			GetNcFileFormatFromString(strOutputFormat);
 		if (eOutputFormat == NcFile::BadFormat) {
@@ -174,6 +191,7 @@ int GenerateOverlapMesh(
 				strOutputFormat.c_str());
 		}
 
+#endif
         // Load input mesh
         AnnounceStartBlock ( "Loading mesh A" );
         Mesh meshA ( strMeshA );
@@ -251,5 +269,7 @@ int GenerateOverlapMesh(
         return ( 0 );
     }
 }
+
+#endif // TEMPEST_NETCDF
 
 ///////////////////////////////////////////////////////////////////////////////

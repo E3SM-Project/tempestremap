@@ -21,7 +21,9 @@
 #include "DataArray1D.h"
 #include "DataArray2D.h"
 #include "DataArray3D.h"
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 #include <string>
 #include <vector>
 #include <cfloat>
@@ -88,6 +90,7 @@ public:
 	{ }
 
 public:
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Initialize the array of dimensions from a file.
 	///	</summary>
@@ -107,6 +110,7 @@ public:
 	void InitializeSourceDimensionsFromFile(
 		const std::string & strSourceMesh
 	);
+#endif
 
     ///	<summary>
     ///		Initialize the array of input dimensions from a mesh.
@@ -116,12 +120,14 @@ public:
         const std::vector<int>& p_srcDimSizes
     );
 
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Initialize the array of output dimensions from a file.
 	///	</summary>
 	void InitializeTargetDimensionsFromFile(
 		const std::string & strTargetMesh
 	);
+#endif
 
     ///	<summary>
     ///		Initialize the array of output dimensions from a mesh.
@@ -352,6 +358,7 @@ public:
 	///	<summary>
 	///		Copy a list of variables from a source file to target file.
 	///	</summary>
+#if defined(TEMPEST_NETCDF)
 	void PreserveVariables(
 		const std::string & strSourceDataFile,
 		const std::string & strTargetDataFile,
@@ -366,8 +373,10 @@ public:
 		const std::string & strSourceDataFile,
 		const std::string & strTargetDataFile
 	);
+#endif
 
 public:
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Apply the offline map to a data file.
 	///	</summary>
@@ -397,6 +406,7 @@ public:
 		const std::map<std::string, std::string> & mapAttributes,
 		NcFile::FileFormat eFileFormat = NcFile::Classic
 	);
+#endif
 
 	///	<summary>
 	///		Initialize a map that is the transverse of the given map.

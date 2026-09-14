@@ -24,7 +24,9 @@
 #include "FiniteElementTools.h"
 #include "SparseMatrix.h"
 #include "STLStringHelper.h"
+#if defined(TEMPEST_NETCDF)
 #include "NetCDFUtilities.h"
+#endif
 #include "triangle.h"
 #include "FiniteVolumeTools.h"
 
@@ -33,7 +35,9 @@
 #include "LinearRemapSE0.h"
 #include "LinearRemapFV.h"
 
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 #include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,6 +78,8 @@ static void ParseVariableList(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+#if defined(TEMPEST_NETCDF)
 
 void LoadMetaDataFile(
 	const std::string & strSourceMeta,
@@ -126,6 +132,8 @@ void LoadMetaDataFile(
 	}
 }
 
+#endif // TEMPEST_NETCDF
+
 ///////////////////////////////////////////////////////////////////////////////
 
 extern "C"
@@ -138,7 +146,9 @@ int GenerateOfflineMapWithMeshes (
 	const GenerateOfflineMapAlgorithmOptions & optsAlg,
 	OfflineMap & mapRemap
 ) {
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
@@ -161,6 +171,7 @@ try {
 	std::string strNetCDFFormat = optsAlg.strOutputFormat;
 	STLStringHelper::ToLower(strNetCDFFormat);
 
+#if defined(TEMPEST_NETCDF)
 	NcFile::FileFormat eOutputFormat =
 		GetNcFileFormatFromString(strNetCDFFormat);
 	if (eOutputFormat == NcFile::BadFormat) {
@@ -168,6 +179,7 @@ try {
 			"expected [Classic|Offset64Bits|Netcdf4|Netcdf4Classic]",
 			optsAlg.strOutputFormat.c_str());
 	}
+#endif
    
 	STLStringHelper::ToLower(strSourceType);
 	STLStringHelper::ToLower(strTargetType);
@@ -530,7 +542,13 @@ try {
 
 		if (optsAlg.strTargetMeta != "") {
 			AnnounceStartBlock("Loading meta data file");
+#if defined(TEMPEST_NETCDF)
 			LoadMetaDataFile(optsAlg.strTargetMeta, dataGLLNodes, dataGLLJacobian);
+#else
+			_EXCEPTIONT("Cannot load a meta data file: TempestRemap was built "
+				"without NetCDF support (--disable-netcdf). Leave \"strTargetMeta\" "
+				"empty to generate the meta data in memory instead.");
+#endif
 			AnnounceEndBlock(NULL);
 
 		} else {
@@ -614,7 +632,13 @@ try {
 
 		if (optsAlg.strSourceMeta != "") {
 			AnnounceStartBlock("Loading meta data file");
+#if defined(TEMPEST_NETCDF)
 			LoadMetaDataFile(optsAlg.strSourceMeta, dataGLLNodes, dataGLLJacobian);
+#else
+			_EXCEPTIONT("Cannot load a meta data file: TempestRemap was built "
+				"without NetCDF support (--disable-netcdf). Leave \"strSourceMeta\" "
+				"empty to generate the meta data in memory instead.");
+#endif
 			AnnounceEndBlock(NULL);
 
 		} else {
@@ -692,8 +716,14 @@ try {
 		// Input metadata
 		if (optsAlg.strSourceMeta != "") {
 			AnnounceStartBlock("Loading input meta data file");
+#if defined(TEMPEST_NETCDF)
 			LoadMetaDataFile(
 				optsAlg.strSourceMeta, dataGLLNodesIn, dataGLLJacobianIn);
+#else
+			_EXCEPTIONT("Cannot load a meta data file: TempestRemap was built "
+				"without NetCDF support (--disable-netcdf). Leave \"strSourceMeta\" "
+				"empty to generate the meta data in memory instead.");
+#endif
 			AnnounceEndBlock(NULL);
 
 		} else {
@@ -719,8 +749,14 @@ try {
 		// Output metadata
 		if (optsAlg.strTargetMeta != "") {
 			AnnounceStartBlock("Loading output meta data file");
+#if defined(TEMPEST_NETCDF)
 			LoadMetaDataFile(
 				optsAlg.strTargetMeta, dataGLLNodesOut, dataGLLJacobianOut);
+#else
+			_EXCEPTIONT("Cannot load a meta data file: TempestRemap was built "
+				"without NetCDF support (--disable-netcdf). Leave \"strTargetMeta\" "
+				"empty to generate the meta data in memory instead.");
+#endif
 			AnnounceEndBlock(NULL);
 
 		} else {
@@ -858,7 +894,13 @@ try {
 		mapAttributes.insert(AttributePair("method", optsAlg.strMethod));
 		mapAttributes.insert(AttributePair("version", g_strVersion));
 
+#if defined(TEMPEST_NETCDF)
 		mapRemap.Write(optsAlg.strOutputMapFile, mapAttributes, eOutputFormat);
+#else
+		_EXCEPTIONT("Cannot write map file: TempestRemap was built without "
+			"NetCDF support (--disable-netcdf). The offline map is available "
+			"in the \"mapRemap\" argument.");
+#endif
 		AnnounceEndBlock("Done");
 		AnnounceBanner();
 	}
@@ -867,14 +909,16 @@ try {
 
 } catch(Exception & e) {
 	Announce(e.ToString().c_str());
-	return (0);
+	return (-1);
 
 } catch(...) {
-	return (0);
+	return (-2);
 }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+#if defined(TEMPEST_NETCDF)
 
 extern "C" 
 int GenerateOfflineMap (
@@ -886,7 +930,9 @@ int GenerateOfflineMap (
 	const GenerateOfflineMapAlgorithmOptions & optsAlg,
 	OfflineMap & mapRemap
 ) {
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
@@ -969,7 +1015,9 @@ int GenerateOfflineMapAndApply (
 	const ApplyOfflineMapOptions & optsApply,
 	OfflineMap & mapRemap
 ) {
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
@@ -1159,5 +1207,7 @@ int main(int argc, char** argv) {
 }
 
 #endif
+
+#endif // TEMPEST_NETCDF
 
 ///////////////////////////////////////////////////////////////////////////////
