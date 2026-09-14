@@ -73,6 +73,7 @@ extern "C" {
 		std::string strOutputFormat,
 		bool fVerbose );
 
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Generate a rectilinear mesh from a file.
 	///	</summary>
@@ -100,6 +101,7 @@ extern "C" {
 		std::string strOutputFormat,
 		bool fVerbose
 	);
+#endif
 
 	///	<summary>
 	///		Generate a Universal Transverse Mercator mesh.
@@ -141,6 +143,7 @@ extern "C" {
 		double dDX,
 		std::string strOutputFile );
 
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Compute the overlap mesh given a source and target mesh file names.
 	///	</summary>
@@ -156,6 +159,7 @@ extern "C" {
 		bool fHasConcaveFacesB = false,
 		bool fAllowNoOverlap = false,
 		bool fVerbose = true );
+#endif
 
 	///	<summary>
 	///		Compute the overlap mesh given two mesh objects.
@@ -174,6 +178,7 @@ extern "C" {
 		bool fAllowNoOverlap = false,
 		bool fVerbose = true );
 
+#if defined(TEMPEST_NETCDF)
 	// Old version of the implementation to compute the overlap mesh
 	// given a source and target mesh file names
 	int GenerateOverlapMesh_v1 (
@@ -193,6 +198,7 @@ extern "C" {
 		std::string strOutput,
 		DataArray3D<int> & dataGLLnodes,
 		DataArray3D<double> & dataGLLJacobian );
+#endif
 
 	///	<summary>
 	///		A structure containing optional arguments for GenerateOfflineMap.
@@ -311,6 +317,7 @@ extern "C" {
 		const GenerateOfflineMapAlgorithmOptions & optsAlg,
 		OfflineMap & mapRemap );
 
+#if defined(TEMPEST_NETCDF)
 	///	<summary>
 	///		Generate the OfflineMap between input and output meshes.
 	///	</summary>
@@ -322,6 +329,7 @@ extern "C" {
 		std::string strTargetType,
 		const GenerateOfflineMapAlgorithmOptions & optsAlg,
 		OfflineMap & mapRemap );
+#endif
 
 	///	<summary>
 	///		A structure containing optional arguments for outputs from GenerateOfflineMap.
@@ -489,4 +497,3 @@ extern "C" {
 }
 
 #endif // TEMPESTREMAP_API_H
-
