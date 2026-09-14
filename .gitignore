@@ -53,6 +53,7 @@ TempestConfig.h.in~
 aclocal.m4
 autom4te.cache/
 build/
+config.log
 config/compile
 config/config.guess
 config/config.sub
