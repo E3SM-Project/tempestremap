@@ -19,11 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Pull in the configure-generated feature macros. This is what makes
-// TEMPEST_NETCDF visible both when building TempestRemap and to downstream
-// consumers of the installed headers, so that both see the same API surface.
+// Pull in the configure-generated feature macros when building through
+// autotools. This is what makes TEMPEST_NETCDF visible both when building
+// TempestRemap and to downstream consumers of the installed headers, so that
+// both see the same API surface.
 //
+#ifdef HAVE_TEMPEST_CONFIG_H
 #include "TempestConfig.h"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -127,4 +130,3 @@ static const int OverlapFaceSearchMaximumFaces = (-1);
 ///////////////////////////////////////////////////////////////////////////////
 
 #endif
-
