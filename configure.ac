@@ -70,9 +70,29 @@ AX_BLAS([], [AC_MSG_ERROR([BLAS library not found])])
 AX_LAPACK([], [AC_MSG_ERROR([LAPACK library not found])])
 
 # checking for netCDF
-AC_LANG_PUSH([C++])
-ACX_NETCDF([],[AC_MSG_ERROR(cannot find NetCDF library. Please specify the directory using --with-netcdf=DIR configure option.)])
-AC_LANG_POP([C++])
+#
+# NetCDF (and, transitively via ACX_NETCDF's AC_REQUIRE([ACX_HDF5]), HDF5) may be
+# disabled to build a dependency-free, library-only TempestRemap. In that mode no
+# file I/O is available -- every format handled here (Exodus/SCRIP/UGRID/map .nc)
+# is NetCDF-based -- so only the in-memory remapping API is built and no
+# command-line tools are produced.
+AC_ARG_ENABLE([netcdf],
+  [AS_HELP_STRING([--disable-netcdf],
+    [build libTempestRemap without NetCDF/HDF5 file I/O. Implies a library-only
+     build: no command-line tools are built, and only the in-memory
+     Mesh/OfflineMap API is available. (default: enabled)])],
+  [], [enable_netcdf=yes])
+
+AS_IF([test "x$enable_netcdf" != xno], [
+  AC_LANG_PUSH([C++])
+  ACX_NETCDF([],[AC_MSG_ERROR(cannot find NetCDF library. Please specify the directory using --with-netcdf=DIR configure option.)])
+  AC_LANG_POP([C++])
+  AC_DEFINE([TEMPEST_NETCDF], [1], [Define to 1 to build NetCDF-based file I/O.])
+], [
+  AC_MSG_NOTICE([NetCDF disabled: building library-only TempestRemap with no NetCDF/HDF5 dependency.])
+])
+
+AM_CONDITIONAL([ENABLE_NETCDF], [test "x$enable_netcdf" != xno])
 
 # Checks for header files.
 AC_CHECK_HEADER(unordered_map, [AC_DEFINE([OVERLAPMESH_USE_UNSORTED_MAP], [1], [Use unordered maps in Overlap mesh],[])])

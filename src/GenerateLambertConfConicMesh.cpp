@@ -21,7 +21,9 @@
 #include <cmath>
 #include <iostream>
 
+#if defined(TEMPEST_NETCDF)
 #include "netcdfcpp.h"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +34,9 @@ extern "C" int GenerateLambertConfConicMesh(  Mesh& mesh, int nNCol, int nNRow,
 												std::string strOutputFile
 ) {
 
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
@@ -251,6 +255,7 @@ try {
 		// Announce
 		Announce("Writing mesh to file [%s]", strOutputFile.c_str());
 
+#if defined(TEMPEST_NETCDF)
 		// Output the mesh
 		mesh.Write(strOutputFile);
 
@@ -262,6 +267,11 @@ try {
 		ncOutput.add_att("rectilinear_dim0_name", "y");
 		ncOutput.add_att("rectilinear_dim1_name", "x");
 		ncOutput.close();
+#else
+		_EXCEPTIONT("Cannot write mesh file: TempestRemap was built "
+			"without NetCDF support (--disable-netcdf). The generated mesh "
+			"is available in the \"mesh\" argument.");
+#endif
 	}
 
 	// Announce

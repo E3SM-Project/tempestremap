@@ -18,9 +18,10 @@
 #include "Exception.h"
 #include "Announce.h"
 #include "STLStringHelper.h"
+#if defined(TEMPEST_NETCDF)
 #include "NetCDFUtilities.h"
-
 #include "netcdfcpp.h"
+#endif
 
 #include <cmath>
 #include <iostream>
@@ -48,7 +49,9 @@ int GenerateStereographicMesh(
 	std::string strOutputFormat
 ) {
 
+#if defined(TEMPEST_NETCDF)
 	NcError error(NcError::silent_nonfatal);
+#endif
 
 try {
 
@@ -77,6 +80,7 @@ try {
     // Check command line parameters (data type arguments)
     STLStringHelper::ToLower(strOutputFormat);
 
+#if defined(TEMPEST_NETCDF)
 	NcFile::FileFormat eOutputFormat =
 		GetNcFileFormatFromString(strOutputFormat);
 	if (eOutputFormat == NcFile::BadFormat) {
@@ -85,6 +89,7 @@ try {
 			strOutputFormat.c_str());
 	}
 
+#endif
 	// Announce
 	std::cout << "..Generating polar stereographic mesh" << std::endl;
 
@@ -218,6 +223,7 @@ try {
 		std::cout << "..Writing mesh to file [" << strOutputFile.c_str() << "] ";
 		std::cout << std::endl;
 
+#if defined(TEMPEST_NETCDF)
 		mesh.Write(strOutputFile, eOutputFormat);
 
 		NcFile ncOutput(strOutputFile.c_str(), NcFile::Write);
@@ -226,6 +232,11 @@ try {
 		ncOutput.add_att("rectilinear_dim1_size", nXElements);
 		ncOutput.add_att("rectilinear_dim0_name", "Y");
 		ncOutput.add_att("rectilinear_dim1_name", "X");
+#else
+		_EXCEPTIONT("Cannot write mesh file: TempestRemap was built "
+			"without NetCDF support (--disable-netcdf). The generated mesh "
+			"is available in the \"mesh\" argument.");
+#endif
 	}
 
 	// Announce
